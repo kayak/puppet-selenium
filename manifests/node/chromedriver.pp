@@ -31,26 +31,12 @@ class selenium::node::chromedriver(
   $zippath   = "${conf::install_dir}/${filename}"
   $path      = "${conf::install_dir}/chromedriver"
 
-  file { $path:
-    ensure => directory;
-  }
-
   staging::deploy {
     $filename:
       source      => "${host}/${version}/${filename}",
       target      => $conf::install_dir,
       user        => $conf::user_name,
       group       => $conf::user_group,
-      creates     => "${conf::install_dir}/chromedriver",
-      require     => File[$path];
-  }
-
-  file {
-    '/usr/local/bin/chromedriver':
-      ensure  => link,
-      owner   => $conf::user_name,
-      group   => $conf::user_group,
-      target  => $path,
-      require => Staging::Deploy[$filename];
+      creates     => "${conf::install_dir}/chromedriver";
   }
 }

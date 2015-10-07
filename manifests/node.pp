@@ -39,10 +39,10 @@ class selenium::node(
     }
   } else {
     $cfg_defaults = { 'configuration' => { 'hub' => $hub } }
-    $final_hash = deep_merge($cfg_defaults,$config_hash)
+    $final_hash = deep_merge($cfg_defaults, $config_hash)
 
     File[$config_file] {
-      content => predictable_pretty_json($final_hash,true),
+      content => template('selenium/nodeConfig.json.erb')
     }
   }
 

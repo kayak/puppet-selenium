@@ -3,16 +3,13 @@ class selenium::common{
   include selenium::conf
   include selenium::common::jar
 
-  ensure_supported({'Ubuntu' => ['12'], 'CentOS' => ['6']}, true)
+  ensure_supported({'Ubuntu' => ['12'], 'CentOS' => ['6'], 'Darwin' => ['10']}, true)
 
   if $conf::manage_user {
     include selenium::common::user
   }
 
-  file { [$conf::install_dir,
-          $conf::rundir,
-          $conf::logdir,
-          $conf::confdir]:
+  file { $conf::install_dir:
     ensure  => directory,
     owner   => $conf::user_name,
     group   => $conf::user_group,

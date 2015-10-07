@@ -28,18 +28,18 @@ class selenium::common::jar(
     $download_path = "${conf::install_dir}/${download_filename}"
     $jar_url = "${host}/${major_minor_version}/${download_filename}"
 
-    r9util::download { $jar_url:
-      path    => $download_path,
-      md5sum  => $download_md5sum,
-      require => File[$conf::install_dir],
-      before  => File[$download_path],
+    staging::file { $download_filename:
+      source  => $jar_url,
+      target  => "${conf::install_dir}/${download_filename}",
+      require => File[$conf::install_dir];
     }
 
-    file { $download_path:
-      owner  => $conf::user_name,
-      group  => $conf::user_group,
-      mode   => '0644',
-      before => File[$path],
+    file { [$conf::rundir, $conf::logdir, $conf::confdir]:
+      ensure  => directory,
+      owner   => $conf::user_name,
+      group   => $conf::user_group,
+      recurse => true,
+      require => File[$conf::install_dir];
     }
 
     File[$path] {

@@ -13,9 +13,11 @@ class selenium::node::display(
     }
   }
 
-  if $headless {
-    include selenium::node::display::headless
-  } else {
-    include selenium::node::display::headed
+  unless $::osfamily == 'Darwin' {
+    if $headless {
+      include selenium::node::display::headless
+    } else {
+      include selenium::node::display::headed
+    }
   }
 }

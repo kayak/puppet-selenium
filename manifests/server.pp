@@ -11,36 +11,52 @@ define selenium::server(
 ){
 
   include selenium::common
-  include bluepill
 
   $appname = "selenium-${title}"
   $cmd     = template('selenium/start_command.erb')
   $logfile = "${conf::logdir}/${title}.log"
   $pidfile = "${conf::rundir}/${title}.pid"
 
-  bluepill::simple_app { $appname:
-    start_command     => $cmd,
-    user              => $conf::user_name,
-    group             => $conf::user_group,
-    pidfile           => $pidfile,
-    service_name      => $appname,
-    logfile           => $logfile,
-    rotate_logs       => true,
-    logrotate_options => {
-      'copytruncate'  => true,
-      'rotate'        => 2,
-      'delaycompress' => false,
-    },
-    config_content    => $bluepill_cfg_content,
-    config_source     => $bluepill_cfg_source,
-    require           => [User[$conf::user_name], File[$conf::install_dir]],
-    subscribe         => Class['selenium::common::jar'],
+  if $::osfamily == 'RedHat' {
+    include bluepill
+
+    bluepill::simple_app { $appname:
+      start_command     => $cmd,
+      user              => $conf::user_name,
+      group             => $conf::user_group,
+      pidfile           => $pidfile,
+      service_name      => $appname,
+      logfile           => $logfile,
+      rotate_logs       => true,
+      logrotate_options => {
+        'copytruncate'  => true,
+        'rotate'        => 2,
+        'delaycompress' => false,
+      },
+      config_content    => $bluepill_cfg_content,
+      config_source     => $bluepill_cfg_source,
+      require           => [User[$conf::user_name], File[$conf::install_dir]],
+      subscribe         => Class['selenium::common::jar'],
+    }
+  }
+  elsif $::osfamily == 'Darwin' {
+    file { '/Library/LaunchDaemons/com.kayak.selenium.plist':
+      ensure => file,
+      content => template('selenium/com.kayak.selenium.plist.erb');
+    }
+
+    service { 'com.kayak.selenium':
+      ensure    => running,
+      subscribe => File['/Library/LaunchDaemons/com.kayak.selenium.plist'];
+    }
   }
 
   if $java_classname == 'UNDEFINED' {
     warning('Java classname set to UNDEFINED, not including or requiring Java')
   }else{
     include $java_classname
-    Class[$java_classname] -> Bluepill::App["selenium-${title}"]
+    if $::osfamily == 'RedHat' {
+      Class[$java_classname] -> Bluepill::App["selenium-${title}"]
+    }
   }
 }

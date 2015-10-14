@@ -41,8 +41,15 @@ class selenium::node(
     $cfg_defaults = { 'configuration' => { 'hub' => $hub } }
     $final_hash = deep_merge($cfg_defaults, $config_hash)
 
-    File[$config_file] {
-      content => template('selenium/nodeConfig.json.erb')
+    if $::rubyversion < '1.9.0' {
+      File[$config_file] {
+        content => predictable_pretty_json($final_hash, true)
+      }
+    }
+    else {
+      File[$config_file] {
+        content => template('selenium/nodeConfig.json.erb')
+      }
     }
   }
 

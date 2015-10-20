@@ -23,7 +23,7 @@ class selenium::cleanup(
     user        => $conf::user_name,
     environment => ['PATH=/bin:/usr/bin:/sbin:/usr/sbin'],
     hour        => '*',
-    minute      => 0,
+    minute      => '*',
   }
 
 }

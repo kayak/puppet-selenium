@@ -3,7 +3,7 @@ class selenium::node::display(
   $enable_vnc       = false,
   $use_vnc_password = false,
   $vnc_password     = 'changeme',
-  $vnc_view_only    = true,
+  $vnc_view_only    = false,
   $vnc_port         = 5900,
 ){
 

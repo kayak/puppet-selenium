@@ -26,16 +26,14 @@ for killfile in "/opt/google/chrome/chrome"; do
   fi
 done
 
-if which killall >/dev/null && \
-  killall --help 2>&1 | grep "\-\-older\-than" >/dev/null; then
-
-  killall --verbose \
-    --signal $SIGNAL \
-    --older-than "${HOURS_OLD}h" \
-    "${to_kill[@]}"
-else
-  echo "killall is missing or too outdated to use, please upgrade!" >&2
-fi
+for command in "${to_kill[@]}"
+do
+  for pid in `ps -eoetime=,pid=,pcpu=,comm= | awk -v HOURS="$HOURS_OLD" 'int(substr($0,4,2)) >= HOURS { print }' | grep ${command} | awk '{ print $2 }'`
+  do
+    echo "Killing ${pid} $(ps aux | grep ${pid} | grep -v grep)"
+    kill -9 ${pid}
+  done
+done
 
 MINS_OLD=$(( $HOURS_OLD * 60 ))
 

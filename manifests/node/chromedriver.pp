@@ -28,15 +28,15 @@ class selenium::node::chromedriver(
 
   $host      = 'http://chromedriver.storage.googleapis.com'
   $filename  = "chromedriver_${dist}${arch}.zip"
-  $zippath   = "${conf::install_dir}/${filename}"
-  $path      = "${conf::install_dir}/chromedriver"
+  $zippath   = "${selenium::conf::install_dir}/${filename}"
+  $path      = "${selenium::conf::install_dir}/chromedriver"
 
   staging::deploy {
     $filename:
       source      => "${host}/${version}/${filename}",
-      target      => $conf::install_dir,
-      user        => $conf::user_name,
-      group       => $conf::user_group,
-      creates     => "${conf::install_dir}/chromedriver";
+      target      => $selenium::conf::install_dir,
+      user        => $selenium::conf::user_name,
+      group       => $selenium::conf::user_group,
+      creates     => "${selenium::conf::install_dir}/chromedriver";
   }
 }

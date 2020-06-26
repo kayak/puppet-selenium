@@ -4,9 +4,9 @@ class selenium::node::display::headed::autologin {
 
   exec { 'add-selenium-user-to-nopasswdlogin-group':
     path    => ['/bin', '/sbin', '/usr/bin', '/usr/sbin'],
-    unless  => "groups ${conf::user_name} | grep nopasswdlogin",
-    command => "adduser ${conf::user_name} nopasswdlogin",
-    require => User[$conf::user_name]
+    unless  => "groups ${selenium::conf::user_name} | grep nopasswdlogin",
+    command => "adduser ${selenium::conf::user_name} nopasswdlogin",
+    require => User[$selenium::conf::user_name]
   }
 
   package { 'lightdm':
@@ -20,7 +20,7 @@ class selenium::node::display::headed::autologin {
 
   ini_setting { 'user':
     setting => 'autologin-user',
-    value   => $conf::user_name,
+    value   => $selenium::conf::user_name,
   }
 
   ini_setting { 'user-timeout':

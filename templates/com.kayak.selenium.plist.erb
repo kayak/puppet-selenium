@@ -17,11 +17,11 @@
     <array>
       <string>java</string>
       <string>-jar</string>
-      <string><%= scope.lookupvar('conf::install_dir') %>/selenium-server-standalone.jar</string>
+      <string><%= scope.lookupvar('selenium::conf::install_dir') %>/selenium-server-standalone.jar</string>
       <string>-role</string>
       <string>node</string>
       <string>-nodeConfig</string>
-      <string><%= scope.lookupvar('conf::install_dir') %>/conf/nodeConfig.json</string>
+      <string><%= scope.lookupvar('selenium::conf::install_dir') %>/conf/nodeConfig.json</string>
     </array>
     <key>RunAtLoad</key>
     <true/>

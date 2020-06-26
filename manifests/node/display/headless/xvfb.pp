@@ -21,12 +21,12 @@ class selenium::node::display::headless::xvfb{
     }
   }
 
-  $fbdir = "${conf::rundir}/xvfb"
+  $fbdir = "${selenium::conf::rundir}/xvfb"
 
-  file { "${conf::rundir}/xvfb":
+  file { "${selenium::conf::rundir}/xvfb":
     ensure => directory,
-    owner  => $conf::user_name,
-    group  => $conf::user_group,
+    owner  => $selenium::conf::user_name,
+    group  => $selenium::conf::user_group,
     mode   => '0755',
   }
 }

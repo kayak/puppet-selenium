@@ -9,12 +9,12 @@ class selenium::common::jar(
 
   include selenium::conf
 
-  $path = "${conf::install_dir}/selenium-server-standalone.jar"
+  $path = "${selenium::conf::install_dir}/selenium-server-standalone.jar"
 
   file { $path:
     ensure => link,
-    owner  => $conf::user_name,
-    group  => $conf::user_group,
+    owner  => $selenium::conf::user_name,
+    group  => $selenium::conf::user_group,
   }
 
   if $download {
@@ -25,21 +25,21 @@ class selenium::common::jar(
     $major_minor_version = inline_template($templ)
 
     $download_filename = "selenium-server-standalone-${version}.jar"
-    $download_path = "${conf::install_dir}/${download_filename}"
+    $download_path = "${selenium::conf::install_dir}/${download_filename}"
     $jar_url = "${host}/${major_minor_version}/${download_filename}"
 
     staging::file { $download_filename:
       source  => $jar_url,
-      target  => "${conf::install_dir}/${download_filename}",
-      require => File[$conf::install_dir];
+      target  => "${selenium::conf::install_dir}/${download_filename}",
+      require => File[$selenium::conf::install_dir];
     }
 
-    file { [$conf::rundir, $conf::logdir, $conf::confdir]:
+    file { [ $selenium::conf::rundir, $selenium::conf::logdir, $selenium::conf::confdir ]:
       ensure  => directory,
-      owner   => $conf::user_name,
-      group   => $conf::user_group,
+      owner   => $selenium::conf::user_name,
+      group   => $selenium::conf::user_group,
       recurse => true,
-      require => File[$conf::install_dir];
+      require => File[$selenium::conf::install_dir];
     }
 
     File[$path] {

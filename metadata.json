@@ -1,0 +1,32 @@
+{
+  "name": "kayak-selenium",
+  "version": "0.0.3",
+  "author": "Kayak",
+  "summary": "Selenium grid",
+  "license": "Apache-2.0",
+  "source": "ssh://git@git.runwaynine.com:7999/op/github-selenium.git",
+  "project_page": "https://git.runwaynine.com/projects/OP/repos/github-selenium/browse",
+  "dependencies": [
+    { "name": "puppetlabs/stdlib", "version_requirement": ">= 3.2.0" },
+    { "name": "puppetlabs/inifile", "version_requirement": ">= 0.10.1" },
+    { "name": "puppet/epel", "version_requirement": ">= 3.0.0" },
+    { "name": "kayak/r9util", "version_requirement": ">= 0.0.3" },
+    { "name": "kayak/bluepill", "version_requirement": ">= 0.0.1" }
+  ],
+  "data_provider": "hiera",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 5.0.0 < 6.0.0"
+    }
+  ],
+  "description": "Advanced management of Selenium grid nodes"
+}

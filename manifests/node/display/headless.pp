@@ -11,7 +11,7 @@ class selenium::node::display::headless(
 ){
   include selenium::node::display::headless::xvfb
 
-  headless::xvfb_display { 'main':
+  selenium::node::display::headless::xvfb_display { 'main':
     display       => $display,
     width         => $width,
     height        => $height,

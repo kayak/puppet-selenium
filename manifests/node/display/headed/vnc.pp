@@ -7,8 +7,8 @@ class selenium::node::display::headed::vnc{
   $password            = $headed::vnc_password
   $view_only           = $headed::vnc_view_only
   $port                = $headed::vnc_port
-  $home                = $conf::user_homedir
-  $logdir              = $conf::logdir
+  $home                = $selenium::conf::user_homedir
+  $logdir              = $selenium::conf::logdir
   $onlogin_script      = "${home}/onlogin"
 
   package { 'gnome-user-share':
@@ -37,7 +37,7 @@ class selenium::node::display::headed::vnc{
         "${home}/.config",
         "${home}/.config/autostart",
         "${home}/.config/autostart/onlogin.desktop"]{
-    owner => $conf::user_name,
-    group => $conf::user_group
+    owner => $selenium::conf::user_name,
+    group => $selenium::conf::user_group
   }
 }

@@ -3,6 +3,7 @@ class selenium::hub(
   $system_properties = {}, # Java system properties
   $env_vars          = {}, # Environment variables
   $config_hash       = {}, # Hub JSON configuration options.
+  $java_class        = 'org.openqa.grid.selenium.GridLauncher',
   $config_source     = undef,
   $config_content    = undef,
   $bluepill_cfg_content = undef,
@@ -10,19 +11,20 @@ class selenium::hub(
 ){
   include selenium::common
 
-  $configfile = "${conf::confdir}/hubConfig.json"
+  $configfile = "${selenium::conf::confdir}/hubConfig.json"
   file { $configfile:
     ensure  => present,
-    owner   => $conf::user_name,
-    group   => $conf::user_group,
+    owner   => $selenium::conf::user_name,
+    group   => $selenium::conf::user_group,
     mode    => '0644',
   }
   ->
   selenium::server { 'hub':
     selenium_args        => ['-role','hub','-hubConfig',$configfile],
-    java_command         => $conf::java_command,
-    java_classpath       => $conf::java_classpath,
-    java_classname       => $conf::java_classname,
+    java_command         => $selenium::conf::java_command,
+    java_classpath       => $selenium::conf::java_classpath,
+    java_classname       => $selenium::conf::java_classname,
+    java_class           => $java_class,
     java_args            => $java_args,
     system_properties    => $system_properties,
     env_vars             => $env_vars,
@@ -42,7 +44,7 @@ class selenium::hub(
     }
   } else {
     File[$configfile]{
-      content => predictable_pretty_json($config_hash,true),
+      content => inline_template("<% require 'json' %><%= JSON.pretty_generate(@config_hash) %>"),
     }
   }
 }

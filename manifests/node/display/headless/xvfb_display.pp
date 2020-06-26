@@ -12,17 +12,17 @@ define selenium::node::display::headless::xvfb_display(
   include selenium::conf
   include selenium::node::display::headless::xvfb
 
-  $fbdir = $xvfb::fbdir
+  $fbdir = $selenium::node::display::headless::xvfb::fbdir
 
   $command = template('selenium/xvfb_command.erb')
 
   bluepill::simple_app { "xvfb-${title}":
     start_command => $command,
     service_name  => "xvfb-${title}",
-    user          => $conf::user_name,
-    group         => $conf::user_group,
-    logfile       => "${conf::logdir}/xvfb-${title}",
-    pidfile       => "${conf::rundir}/xvfb-${title}.pid",
+    user          => $selenium::conf::user_name,
+    group         => $selenium::conf::user_group,
+    logfile       => "${selenium::conf::logdir}/xvfb-${title}",
+    pidfile       => "${selenium::conf::rundir}/xvfb-${title}.pid",
     rotate_logs   => true,
     require       => [Package[$xvfb::package],File[$fbdir]]
   }
@@ -31,11 +31,11 @@ define selenium::node::display::headless::xvfb_display(
     include selenium::node::display::headless::x11vnc
 
     if $vnc_password {
-      $pwfile   = "${conf::confdir}/x11vnc-${title}-password"
+      $pwfile   = "${selenium::conf::confdir}/x11vnc-${title}-password"
 
       file { $pwfile:
-        owner   => $conf::user_name,
-        group   => $conf::user_group,
+        owner   => $selenium::conf::user_name,
+        group   => $selenium::conf::user_group,
         mode    => '0400',
         content => $vnc_password,
       }
@@ -46,10 +46,10 @@ define selenium::node::display::headless::xvfb_display(
     bluepill::simple_app { "x11vnc-${title}":
       start_command => $vnc_cmd,
       service_name  => "x11vnc-${title}",
-      user          => $conf::user_name,
-      group         => $conf::user_group,
-      logfile       => "${conf::logdir}/x11vnc-${title}",
-      pidfile       => "${conf::rundir}/x11vnc-${title}.pid",
+      user          => $selenium::conf::user_name,
+      group         => $selenium::conf::user_group,
+      logfile       => "${selenium::conf::logdir}/x11vnc-${title}",
+      pidfile       => "${selenium::conf::rundir}/x11vnc-${title}.pid",
       rotate_logs   => true,
     }
   }

@@ -18,7 +18,7 @@ class selenium::common {
   include selenium::conf
   include selenium::common::jar
   notice('selenium::common has been declared')
-  user { $conf::user_name: }
+  user { $selenium::conf::user_name: }
 }
 class bluepill{
   notice('bluepill has been declared')

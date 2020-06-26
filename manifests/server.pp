@@ -3,6 +3,7 @@ define selenium::server(
   $system_properties = {},     # Hash of system properties to set for the jvm
   $java_args         = [],     # Array of arguments to pass to jvm
   $java_command      = 'java', # Java command to run
+  $java_class        = 'org.openqa.grid.selenium.GridLauncher',
   $java_classname    = 'java', # Name of a Java class to require
   $java_classpath    = [],
   $selenium_args     = [],     # Array of arguments to pass to selenium jar
@@ -14,28 +15,35 @@ define selenium::server(
 
   $appname = "selenium-${title}"
   $cmd     = template('selenium/start_command.erb')
-  $logfile = "${conf::logdir}/${title}.log"
-  $pidfile = "${conf::rundir}/${title}.pid"
+  $logfile = "${selenium::conf::logdir}/${title}.log"
+  $pidfile = "${selenium::conf::rundir}/${title}.pid"
 
   if $::osfamily == 'RedHat' {
     include bluepill
 
     bluepill::simple_app { $appname:
       start_command     => $cmd,
-      user              => $conf::user_name,
-      group             => $conf::user_group,
+      user              => $selenium::conf::user_name,
+      group             => $selenium::conf::user_group,
       pidfile           => $pidfile,
       service_name      => $appname,
       logfile           => $logfile,
       rotate_logs       => true,
       logrotate_options => {
+        'compress'      => true,
         'copytruncate'  => true,
-        'rotate'        => 2,
+        'dateext'       => true,
+        'dateformat'    => '-%Y%m%d-%s',
         'delaycompress' => false,
+        'ifempty'       => false,
+        'missingok'     => true,
+        'rotate'        => 8,
+        'rotate_every'  => 'hour',
+        'size'          => '50M',
       },
       config_content    => $bluepill_cfg_content,
       config_source     => $bluepill_cfg_source,
-      require           => [User[$conf::user_name], File[$conf::install_dir]],
+      require           => [User[$selenium::conf::user_name], File[$selenium::conf::install_dir]],
       subscribe         => Class['selenium::common::jar'],
     }
   }

@@ -3,11 +3,15 @@ class selenium::node(
   $hub_port             = '4444',
 
   $java_args            = [],
+  $java_class           = 'org.openqa.grid.selenium.GridLauncher',
   $system_properties    = {},
   $env_vars             = {},
 
   $install_chromedriver = false,
   $chromedriver_version = '2.1',
+
+  $install_geckodriver  = false,
+  $geckodriver_version  = '0.11.1',
 
   $config_hash          = {},
   $config_source        = undef,
@@ -20,12 +24,12 @@ class selenium::node(
   include selenium::node::display
 
   $hub = "http://${hub_host}:${hub_port}/grid/register"
-  $config_file = "${conf::confdir}/nodeConfig.json"
+  $config_file = "${selenium::conf::confdir}/nodeConfig.json"
 
   file { $config_file:
     ensure  => present,
-    owner   => $conf::user_name,
-    group   => $conf::user_group,
+    owner   => $selenium::conf::user_name,
+    group   => $selenium::conf::user_group,
     mode    => '0644',
   }
 
@@ -38,26 +42,24 @@ class selenium::node(
       content => $config_content,
     }
   } else {
-    $cfg_defaults = { 'configuration' => { 'hub' => $hub } }
+    if $java_class =~ /V3$/ {
+      $cfg_defaults = { 'hub' => $hub }
+    } else {
+      $cfg_defaults = { 'configuration' => { 'hub' => $hub } }
+    }
     $final_hash = deep_merge($cfg_defaults, $config_hash)
 
-    if $::rubyversion < '1.9.0' {
-      File[$config_file] {
-        content => predictable_pretty_json($final_hash, true)
-      }
-    }
-    else {
-      File[$config_file] {
-        content => template('selenium/nodeConfig.json.erb')
-      }
+    File[$config_file] {
+      content => inline_template("<% require 'json' %><%= JSON.pretty_generate(@final_hash) %>"),
     }
   }
 
   selenium::server { 'node':
     selenium_args        => ['-role','node','-nodeConfig',$config_file,'-host',$fqdn],
-    java_command         => $conf::java_command,
-    java_classpath       => $conf::java_classpath,
-    java_classname       => $conf::java_classname,
+    java_command         => $selenium::conf::java_command,
+    java_classpath       => $selenium::conf::java_classpath,
+    java_classname       => $selenium::conf::java_classname,
+    java_class           => $java_class,
     java_args            => $java_args,
     system_properties    => $system_properties,
     env_vars             => merge({ 'DISPLAY' => ':0' }, $env_vars ),
@@ -69,6 +71,10 @@ class selenium::node(
 
   if $install_chromedriver {
     include selenium::node::chromedriver
+  }
+
+  if $install_geckodriver {
+    include selenium::node::geckodriver
   }
 
   Class['Selenium::Node::Display'] -> Selenium::Server['node']
